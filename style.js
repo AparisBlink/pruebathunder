@@ -86,9 +86,9 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./thunder-clonable/blink-src/js/cke_styles.js":
+/***/ "./prueba-thunder/blink-src/js/cke_styles.js":
 /*!*****************************************************!*\
-  !*** ./thunder-clonable/blink-src/js/cke_styles.js ***!
+  !*** ./prueba-thunder/blink-src/js/cke_styles.js ***!
   \*****************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -108,17 +108,17 @@
     
     /***/ }),
     
-    /***/ "./thunder-clonable/blink-src/js/main.js":
+    /***/ "./prueba-thunder/blink-src/js/main.js":
     /*!***********************************************!*\
-      !*** ./thunder-clonable/blink-src/js/main.js ***!
+      !*** ./prueba-thunder/blink-src/js/main.js ***!
       \***********************************************/
     /*! no exports provided */
     /***/ (function(module, __webpack_exports__, __webpack_require__) {
     
     "use strict";
     __webpack_require__.r(__webpack_exports__);
-    /* harmony import */ var _cke_styles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cke_styles */ "./thunder-clonable/blink-src/js/cke_styles.js");
-    /* harmony import */ var _overrides__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./overrides */ "./thunder-clonable/blink-src/js/overrides.js");
+    /* harmony import */ var _cke_styles__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./cke_styles */ "./prueba-thunder/blink-src/js/cke_styles.js");
+    /* harmony import */ var _overrides__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./overrides */ "./prueba-thunder/blink-src/js/overrides.js");
     /*
     *   Javascript principal con la estructura básica del estilo
     */
@@ -134,10 +134,10 @@
     
       PruebaThunderStyle.prototype = {
         parent: blink.theme.styles["thunder"].prototype,
-        bodyClassName: 'content_type_clase_thunder-clonable',
+        bodyClassName: 'content_type_clase_prueba-thunder',
         extraPlugins: ['image2'],
         ckEditorStyles: {
-          name: 'thunder-clonable',
+          name: 'prueba-thunder',
           styles: _cke_styles__WEBPACK_IMPORTED_MODULE_0__["default"]
         },
         init: function () {
@@ -148,14 +148,14 @@
         ..._overrides__WEBPACK_IMPORTED_MODULE_1__["default"]
       };
       PruebaThunderStyle.prototype = _.extend({}, new blink.theme.styles["thunder"](), PruebaThunderStyle.prototype);
-      blink.theme.styles['thunder-clonable'] = PruebaThunderStyle;
+      blink.theme.styles['prueba-thunder'] = PruebaThunderStyle;
     })(blink);
     
     /***/ }),
     
-    /***/ "./thunder-clonable/blink-src/js/overrides.js":
+    /***/ "./prueba-thunder/blink-src/js/overrides.js":
     /*!****************************************************!*\
-      !*** ./thunder-clonable/blink-src/js/overrides.js ***!
+      !*** ./prueba-thunder/blink-src/js/overrides.js ***!
       \****************************************************/
     /*! exports provided: default */
     /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -175,9 +175,9 @@
     
     /***/ }),
     
-    /***/ "./thunder-clonable/blink-src/styles/main.scss":
+    /***/ "./prueba-thunder/blink-src/styles/main.scss":
     /*!*****************************************************!*\
-      !*** ./thunder-clonable/blink-src/styles/main.scss ***!
+      !*** ./prueba-thunder/blink-src/styles/main.scss ***!
       \*****************************************************/
     /*! no static exports found */
     /***/ (function(module, exports, __webpack_require__) {
@@ -190,13 +190,13 @@
     
     /***/ 0:
     /*!***************************************************************************************************!*\
-      !*** multi ./thunder-clonable/blink-src/js/main.js ./thunder-clonable/blink-src/styles/main.scss ***!
+      !*** multi ./prueba-thunder/blink-src/js/main.js ./prueba-thunder/blink-src/styles/main.scss ***!
       \***************************************************************************************************/
     /*! no static exports found */
     /***/ (function(module, exports, __webpack_require__) {
     
-    __webpack_require__(/*! D:\workspaces\web\blinkweb\blink\www\themes\responsive\assets\styles\thunder-clonable\blink-src\js\main.js */"./thunder-clonable/blink-src/js/main.js");
-    module.exports = __webpack_require__(/*! D:\workspaces\web\blinkweb\blink\www\themes\responsive\assets\styles\thunder-clonable\blink-src\styles\main.scss */"./thunder-clonable/blink-src/styles/main.scss");
+    __webpack_require__(/*! D:\workspaces\web\blinkweb\blink\www\themes\responsive\assets\styles\prueba-thunder\blink-src\js\main.js */"./prueba-thunder/blink-src/js/main.js");
+    module.exports = __webpack_require__(/*! D:\workspaces\web\blinkweb\blink\www\themes\responsive\assets\styles\prueba-thunder\blink-src\styles\main.scss */"./prueba-thunder/blink-src/styles/main.scss");
     
     
     /***/ })
