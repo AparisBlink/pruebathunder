@@ -1,5 +1,464 @@
-var Homepage=function(e){if(!e)return new Error("No data defined");this.DATA_LOADED=e;this.ITEMS_PER_PAGE=this.DATA_LOADED.num_items;this.STYLE=blink.theme.styles.thunder.prototype;this.data=this.DATA_LOADED.data;this.prevActivity=parseInt(window.location.hash.replace(this.STYLE.unitHashPrefix,""));this.fromActivity=!isNaN(this.prevActivity);this.mainContainer=document.getElementById("slider");this.$mainContainer=$(this.mainContainer);this.layoutData={filledUnits:[]}};Homepage.prototype.init=function(){var overlay=this.createElement("DIV",{"class":"overlay-background"}),firstPage=this.getFirstpageHtml(),secondPage=this.getSecondpageHtml(),thirdPage=this.getThirdpageHtml(),leftControl=this.createElement("SPAN",{"class":"main_page-slider_control prev fa fa-chevron-left "+(this.fromActivity?"active":"")}),rightControl=this.createElement("SPAN",{"class":"main_page-slider_control next fa fa-chevron-right "+(!this.fromActivity?"active":"")});this.$mainContainer.html("").append(overlay,firstPage,secondPage,thirdPage,leftControl,rightControl);$.ajax({complete:function(){this.addGrades()}.bind(this)});$second_slider_elem=$(secondPage);$third_slider_elem=$(thirdPage);$second_slider_controls=$second_slider_elem.find(".slider_control");$third_slider_controls=$third_slider_elem.find(".slider_control");leftControl.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();var t=$(this),n=$([firstPage,secondPage,thirdPage]),r=n.filter(".active"),i=n.first();r.removeClass("active");n.each(function(e,s){if(r.get(0)===s&&e>0){i=$(n.get(--e));switch(e){case 0:t.removeClass("active");t.siblings(".next").addClass("active");i.addClass("active");break;case 1:var o=r.find(".item.active").attr("data-page"),u=i.find(".item.active").attr("data-page");o!==u?$second_slider_elem.one("slid.bs.carousel",function(){setTimeout(function(){i.addClass("active")},100)}).carousel(parseInt(o)):i.addClass("active");break}}})});rightControl.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();firstPage.classList.remove("active");this.classList.remove("active");secondPage.classList.add("active");leftControl.classList.add("active")});$second_slider_elem.add($third_slider_elem).on("slide.bs.carousel",function(e){var t=$(this),n=e.direction==="left",r=t.find(n?".fa.next":".fa.prev");t.one("slid.bs.carousel",function(e){var i=t.find(".item");i.filter(".active:"+(n?"last":"first")+"-of-type").length!==0?r.addClass("invisible").siblings(".fa").removeClass("invisible"):r.add(r.siblings(".fa")).removeClass("invisible")})});this.$mainContainer.css("overflow","auto");$third_slider_elem.find(".item.active:first-of-type").length==0&&$third_slider_elem.find(".fa.prev").removeClass("invisible");$third_slider_elem.find(".item.active:last-of-type").length!=0&&$third_slider_elem.find(".fa.next").addClass("invisible");$second_slider_elem.find(".unit:not(.empty)").bind("click",function(){var e=$(this).attr("data-unit"),t=$third_slider_elem.find(".item");$second_slider_elem.removeClass("active");$third_slider_elem.carousel(parseInt(e));t.eq(e).hasClass("active")?$third_slider_elem.addClass("active"):$third_slider_elem.one("slid.bs.carousel",function(){setTimeout(function(){$third_slider_elem.addClass("active")},100)})});document.querySelectorAll("a.activity-text-data").forEach(function(subunit){subunit.addEventListener("click",function(e){var action=subunit.getAttribute("data-onclick");eval(action)})})};Homepage.prototype.getFirstpageHtml=function(){var e=this.createElement("DIV",{id:"main_page","class":(!this.fromActivity?"active":"")+" page-item"});var t=this.createElement("DIV",{"class":"book-info"}),n=this.createElement("H1"),r=this.createElement("DIV",{"class":"description"});n.append(document.createTextNode(this.data["title"]));r.append(document.createTextNode(this.data["description"]));e.appendChild(t).append(n,r);return e};Homepage.prototype.getSecondpageHtml=function(){var e="",t=this.data["units"],n=t.slice(),r;var i=this.createElement("DIV",{id:"second_page","class":"carousel slide carousel-fade page-item","data-interval":"false"}),s=this.createElement("DIV",{id:"second_page","class":"carousel-inner"});var o=Math.ceil(t.length/this.ITEMS_PER_PAGE),u=o>1?Math.ceil(t.length/this.ITEMS_PER_PAGE)*this.ITEMS_PER_PAGE:t.length;if(t.length<u){while(n.length<u){n.push({})}}n.forEach(function(t,i){var s=i%this.ITEMS_PER_PAGE==0,o=(i+1)%this.ITEMS_PER_PAGE==0||i+1===n.length,u=typeof t.subunits!=="undefined"&&(t.subunits.length>0||t.resources.length>0),a=Object.keys(t).length===0,f="unit empty"+(a?" fill-unit":""),l="";!r&&typeof r==="undefined"?r=0:s&&++r;if(u){f=f.replace(" empty","");l='data-unit="'+this.layoutData.filledUnits.length+'"';t.pageId=r;this.layoutData.filledUnits.push(t)}e+=s?'<div class="item '+(i==0?"active":"")+'" data-page="'+r+'">':"";e+='<div class="'+f+'" '+l+'">';if(!a){var c=t["image"].match(/\/images\/libro\/verde\.png/g)!==null;bgUrl=c?this.STYLE.defaultUnitImage:t["image"];e+='<div class="img'+(c?" default":"")+'" style="background-image: url('+bgUrl+')"></div>';e+='<div class="unit-info">';e+="<h2>"+t["title"]+"</h2>";e+='<p title="'+t["description"]+'">'+t["description"]+"</p>";e+="</div>"}e+="</div>";e+=o?"</div>":""}.bind(this));s.innerHTML=e;i.append(s);this.carouselize(i,{},"second-slider_control");n.length<=this.ITEMS_PER_PAGE&&i.querySelector(".next.fa.fa-chevron-right").classList.add("invisible");return i};Homepage.prototype.getThirdpageHtml=function(){var e="";thirdPage=this.createElement("DIV",{id:"third_page","class":"carousel slide carousel-fade page-item "+(this.fromActivity?"active":""),"data-interval":"false"}),e+='<div class="carousel-inner">';this.layoutData.filledUnits.forEach(function(t,n){this.prevActivity===parseInt(t.id)||!this.fromActivity&&n==0?isActive=" active":isActive="";var r=t["image"].match(/\/images\/libro\/verde\.png/g)!==null;bgUrl=r?this.STYLE.defaultUnitImage:t["image"];e+='<div class="item'+isActive+'" data-page="'+t.pageId+'" data-unit="'+t.id+'">';e+='<div class="unit">';e+='<div class="img'+(r?" default":"")+'" style="background-image: url('+bgUrl+')"></div>';e+='<div class="unit-info">';e+="<h2>"+t["title"]+"</h2>";e+="<p>"+t["description"]+"<p>";e+="</div>";e+="</div>";e+='<div class="unit_content">';var i=t["subunits"],s=t["resources"],o=i.length+s.length,u=this.createActivityElement.bind(this);i.length>0&&function(){e+='<h3 class="subunits-header">'+textweb("course_unit_activities")+"</h3>";e+='<div class="activities-list">';i.forEach(function(t){!t.ocultar&&(e+=u(t).outerHTML)});e+="</div>"}();s.length>0&&function(){e+='<h3 id="resources-header">'+textweb("course_supplement_content")+"</h3>";e+='<div class="activities-list">';s.forEach(function(t){!t.ocultar&&(e+=u(t).outerHTML)});e+="</div>"}();e+="</div>";e+="</div>"}.bind(this));e+="</div>";thirdPage.innerHTML=e;this.carouselize(thirdPage,{},"third-slider_control");return thirdPage};Homepage.prototype.createElement=function(e,t){var n=document.createElement(e);t&&typeof t==="object"&&Object.keys(t).forEach(function(e){n.setAttribute(e,t[e])});return n};Homepage.prototype.addGrades=function(){var e=function(e,t){if(!e||typeof e===undefined||e===null||e.nota==="")return;var n=this.createElement("SPAN",{"class":"nota"}),r=this.mainContainer.querySelector('[data-id="'+t+'"]');r.appendChild(n).append(e.nota)}.bind(this);for(var t in this.DATA_LOADED.actividades){if(isNaN(parseInt(t)))return;var n=this.DATA_LOADED.actividades[t];e(n,t)}};Homepage.prototype.carouselize=function(e,t,n){var r=$(e),i={cycle:false,ride:false,pause:false},s=this.createElement("SPAN",{"class":"slider_control prev fa fa-chevron-left invisible"}),o=this.createElement("SPAN",{"class":"slider_control next fa fa-chevron-right"});if(n){s.className=s.className.concat(" ",n);o.className=o.className.concat(" ",n)}r.prepend(s).append(o);r.carousel(i);s.addEventListener("click",function(){r.carousel("prev")});o.addEventListener("click",function(){r.carousel("next")})};Homepage.prototype.createActivityElement=function(e){var t=this.createElement("DIV",{"class":"subunit","data-id":e.id});if(this.data.includeHomeworkIcon&&e.canBeHomework){var n=this.createElement("SPAN",{"class":"icon icon-enviar"}),r=this.createElement("IMG",{src:this.data.supportsTasks?"/themes/responsive/images/libro/icons8-send-90.png":"/themes/responsive/images/libro/activ-icon-deberes.png",alt:this.data.supportsTasks?textweb("course_item_send_task"):textweb("course_item_send_homework")});n.append(r);var i=this.createElement("SCRIPT",{type:"text/javascript"}),s='$("#third_page").on("tap click", \'[data-id="'+e.id+"\"] .icon-enviar', function(){"+(this.data.supportsTasks&&e.onlyVisibleTeachers?"_showAlert("+textweb("task_visible_only_teacher")+");":"openSendActivityHomework("+e.id+", "+this.data.supportsTasks+");")+"})";i.innerText=s;t.append(n,i)}var o=this.createElement("DIV",{"class":"activity-data"});var u=this.createElement("A",{"class":"activity-text-data",href:"javascript:void(0)","data-onclick":e["onclickTitle"]});var a=this.createElement("P",{"class":"activity-title"}),f=e["title"]!==""?e["title"]:textweb("course_actividad_no_name");u.appendChild(a).append(document.createTextNode(f));if(typeof e["description"]!=="undefined"&&e["description"]!=""){var l=this.createElement("P",{"class":"activity-description"});l.append(document.createTextNode(e["description"]));u.append(l)}t.appendChild(o).append(u);return t};Homepage.prototype.preloadImage=function(e,t,n){var r=this.createElement("img",{src:e});fullCallback=function(){t(e);r=null};r.addEventListener("load",fullCallback);r.addEventListener("error",n)}
-ƒ (e,t,n){var r=this.createElement("img",{src:e});fullCallback=function(){t(e);r=null};r.addEventListener("load",fullCallback);r.addEventListener("error",n)}
+var Homepage = function(data) {
+	if (!data) return new Error('No data defined');
+	this.DATA_LOADED = data;
+	this.ITEMS_PER_PAGE = this.DATA_LOADED.num_items;
+	this.STYLE = blink.theme.styles.thunder.prototype; // Ojito con esto
+
+	this.data = this.DATA_LOADED.data;
+	this.prevActivity = parseInt(window.location.hash.replace(this.STYLE.unitHashPrefix, ""));
+	this.fromActivity = !isNaN(this.prevActivity);
+	this.mainContainer = document.getElementById("slider");
+	this.$mainContainer = $(this.mainContainer);
+	this.layoutData = {
+		filledUnits: []
+	}
+}
+
+Homepage.prototype.init = function() {
+	var overlay = this.createElement('DIV', {'class': 'overlay-background'}), // Translucid purple mask.
+		firstPage = this.getFirstpageHtml(),
+		secondPage = this.getSecondpageHtml(),
+		thirdPage = this.getThirdpageHtml(),
+		leftControl = this.createElement('SPAN', {'class': 'main_page-slider_control prev fa fa-chevron-left ' + (this.fromActivity ? 'active' : '')}),
+		rightControl = this.createElement('SPAN', {'class': 'main_page-slider_control next fa fa-chevron-right ' + (!this.fromActivity ? 'active' : '')});
+
+	this.$mainContainer
+		.html('')
+		.append(overlay, firstPage, secondPage, thirdPage, leftControl, rightControl);
+
+	$.ajax({
+		complete: (function() {
+			this.addGrades();
+		}).bind(this)
+	});
+
+	$second_slider_elem = $(secondPage);
+	$third_slider_elem = $(thirdPage);
+	$second_slider_controls = $second_slider_elem.find('.slider_control');
+	$third_slider_controls = $third_slider_elem.find('.slider_control');
+
+	// Left/right slider controls - main page.
+	leftControl.addEventListener("click", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var $this = $(this),
+			$pageItems = $([firstPage, secondPage, thirdPage]),
+			$activePage = $pageItems.filter('.active'),
+			$target = $pageItems.first();
+
+		$activePage
+			.removeClass('active');
+
+		$pageItems.each(function(i, el) {
+			if ($activePage.get(0) === el && i > 0) {
+				$target = $($pageItems.get(--i));
+
+				switch(i) {
+					case 0: // Redirects to the Main Page.
+						$this
+							.removeClass('active');
+						$this
+							.siblings('.next')
+							.addClass('active')
+						$target
+							.addClass('active');
+						break;
+					case 1: // Redirects to the second page.
+						var targetPage = $activePage.find('.item.active').attr('data-page'),
+							activePage = $target.find('.item.active').attr('data-page');
+
+						// If the target page is not the active page, we should show the page that contains
+						// the last visited unit.
+						(targetPage !== activePage)
+							? $second_slider_elem
+								.one('slid.bs.carousel', function() {
+									setTimeout(function() {
+										$target
+											.addClass('active');
+									}, 100);
+								})
+								.carousel(parseInt(targetPage))
+							: $target
+								.addClass('active');
+
+						break;
+				}
+			}
+		})
+	});
+
+	rightControl.addEventListener('click', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		// Hide First Page Elements
+		firstPage.classList.remove('active');
+		this.classList.remove('active');
+
+		// Show Second page elements
+		secondPage.classList.add('active');
+		leftControl.classList.add('active');
+	});
+
+	/////////////////////
+	// Carousel events //
+	/////////////////////
+	$second_slider_elem.add($third_slider_elem).on('slide.bs.carousel', function(e) {
+		var $this = $(this),
+			forwards = e.direction === 'left',
+			$target = $this.find(forwards ? '.fa.next' : '.fa.prev');
+
+		// Depending on the carousel direcion, we show or hide the slider controls on both
+		// the second and the third pages in case we reach the firs element or the last
+		// element of the carousel.
+		$this.one('slid.bs.carousel', function(e) {
+			var $pages = $this.find('.item');
+
+			$pages
+				.filter('.active:' + (forwards ? 'last' : 'first') + '-of-type').length !== 0
+					? $target
+						.addClass('invisible')
+						.siblings('.fa')
+							.removeClass('invisible')
+					: $target.add($target.siblings('.fa'))
+						.removeClass('invisible');
+		});
+	});
+
+	this.$mainContainer
+		.css('overflow', 'auto');
+
+	// Depending on which carousel element is shown, we show or hide the slider controls
+	// on the second page.
+	$third_slider_elem
+		.find('.item.active:first-of-type').length == 0
+			&& $third_slider_elem
+				.find('.fa.prev')
+					.removeClass('invisible')
+	$third_slider_elem
+		.find('.item.active:last-of-type').length != 0
+			&& $third_slider_elem
+				.find('.fa.next')
+					.addClass('invisible');
+
+	////////////
+	// Events //
+	////////////
+	// Unit button.
+	$second_slider_elem.find('.unit:not(.empty)').bind("click", function() {
+		var unit = $(this).attr("data-unit"),
+			$units = $third_slider_elem.find('.item');
+
+		$second_slider_elem
+			.removeClass('active');
+
+		$third_slider_elem.carousel(parseInt(unit));
+
+		// If the target unit is not the active one, we should carousel to it
+		// before showing it.
+		$units.eq(unit).hasClass('active')
+			? $third_slider_elem
+				.addClass('active')
+			: $third_slider_elem.one('slid.bs.carousel', function() {
+				setTimeout(function() {
+					$third_slider_elem
+						.addClass('active');
+				}, 100);
+			});
+	});
+	// Subunit button.
+	document.querySelectorAll("a.activity-text-data").forEach(function(subunit) {
+		subunit.addEventListener("click", function(e) {
+			var action = subunit.getAttribute("data-onclick");
+			eval(action);
+		});
+	});
+}
+
+///////////////////////////
+// First page - Landing. //
+///////////////////////////
+Homepage.prototype.getFirstpageHtml = function() {
+	var mainPage = this.createElement('DIV', {'id': 'main_page', 'class': (!this.fromActivity ? 'active' : '') + ' page-item'});
+
+	// Book info.
+	var bookInfo = this.createElement('DIV', {'class': 'book-info'}),
+		title = this.createElement('H1'),
+		description = this.createElement('DIV', {'class': 'description'});
+
+	title.append(document.createTextNode(this.data["title"]));
+
+	description.append(document.createTextNode(this.data["description"]));
+
+	mainPage.appendChild(bookInfo).append(title, description)
+
+	return mainPage;
+};
+
+//////////////////////////////////////
+// Second page - Carousel of units. //
+//////////////////////////////////////
+Homepage.prototype.getSecondpageHtml = function() {
+	var html = '',
+		units = this.data["units"],
+		auxUnits = units.slice(),
+		pageNumber;
+
+	// Required Elements
+	var secondPage = this.createElement('DIV', {'id': 'second_page', 'class': 'carousel slide carousel-fade page-item', 'data-interval': 'false'}),
+		carouselTarget = this.createElement('DIV', {'id': 'second_page', 'class': 'carousel-inner'});
+
+	// If there aren't enough units to fill the last page, we use empty objects to fill
+	// that spaces and make flex-box work fine.
+	var pages = Math.ceil(units.length / this.ITEMS_PER_PAGE),
+		evenUnitsNumber = pages > 1 ? (Math.ceil(units.length / this.ITEMS_PER_PAGE) * this.ITEMS_PER_PAGE) : units.length;
+
+	if (units.length < evenUnitsNumber) {
+		while (auxUnits.length < evenUnitsNumber) {
+			auxUnits.push({});
+		}
+	}
+
+	auxUnits.forEach((function(unit, index) {
+		var newPage = index % this.ITEMS_PER_PAGE == 0,
+			closePage = (index + 1) % this.ITEMS_PER_PAGE == 0 || index + 1 === auxUnits.length,
+			isFilled = typeof unit.subunits !== 'undefined' && (unit.subunits.length > 0 || unit.resources.length > 0),
+			justFill = Object.keys(unit).length === 0, // comprobamos que no sea una actividad de relleno.
+			classString = 'unit empty' + (justFill ? ' fill-unit' : ''),
+			attributeString = '';
+
+		(!pageNumber && typeof pageNumber === 'undefined')  // If pageNumber is undefined, we set it to 0.
+			? (pageNumber = 0)
+			: newPage && (++pageNumber); // Else, if we're creating a new page, we should increase it.
+
+		if (isFilled) {
+			classString = classString.replace(' empty', '');
+			attributeString = 'data-unit="' + this.layoutData.filledUnits.length + '"';
+			unit.pageId = pageNumber;
+			this.layoutData.filledUnits.push(unit);
+		}
+
+		html += newPage
+			? '<div class="item ' + (index == 0 ? 'active' : '') + '" data-page="' + (pageNumber) + '">'
+			: '';
+
+			html += '<div class="' + classString + '" ' + attributeString + '">';
+				if (!justFill) {
+					var defaultBg = unit["image"].match(/\/images\/libro\/verde\.png/g) !== null
+						bgUrl = defaultBg ? this.STYLE.defaultUnitImage : unit["image"];
+					html += '<div class="img' + (defaultBg ? ' default' : '') + '" style="background-image: url(' + bgUrl + ')"></div>';
+					html += '<div class="unit-info">';
+						html += '<h2>' + unit["title"] + '</h2>';
+						html += '<p title="' + unit["description"] + '">' + unit["description"] + '</p>';
+					html += '</div>';
+				}
+			html += '</div>';
+
+		html += (closePage ? '</div>' : '');
+	}).bind(this));
+	carouselTarget.innerHTML = html;
+
+	// Wrap everything inside secondPage.
+	secondPage.append(carouselTarget);
+
+	this.carouselize(secondPage, {}, 'second-slider_control');
+
+	// If there are less units than items per page, we must hide the carousel button.
+	(auxUnits.length <= this.ITEMS_PER_PAGE) && secondPage.querySelector('.next.fa.fa-chevron-right').classList.add('invisible');
+
+	return secondPage;
+};
+
+//////////////////////////////////////
+// Third Page - List of activities. //
+//////////////////////////////////////
+Homepage.prototype.getThirdpageHtml = function() {
+	var html = ''
+		thirdPage = this.createElement('DIV', {'id': 'third_page', 'class': 'carousel slide carousel-fade page-item ' + (this.fromActivity ? 'active' : ''), 'data-interval': 'false'}),
+
+		html += '<div class="carousel-inner">';
+
+			this.layoutData.filledUnits.forEach((function(unit, index) {
+				this.prevActivity === parseInt(unit.id) || !this.fromActivity && index == 0
+					? isActive = ' active'
+					: isActive = '';
+
+				var defaultBg = unit["image"].match(/\/images\/libro\/verde\.png/g) !== null
+					bgUrl = defaultBg ? this.STYLE.defaultUnitImage : unit["image"];
+
+				html += '<div class="item' + isActive + '" data-page="' + unit.pageId + '" data-unit="' + unit.id + '">';
+					html += '<div class="unit">';
+
+						// Unit image.
+						html += '<div class="img' + (defaultBg ? ' default' : '') + '" style="background-image: url(' + bgUrl + ')"></div>';
+
+						// Unit info.
+						html += '<div class="unit-info">';
+							html += '<h2>' + unit["title"] + '</h2>';
+							html += '<p>' + unit["description"] + '<p>';
+						html += '</div>';
+					html += '</div>';
+
+					// Unit content.
+					html += '<div class="unit_content">';
+
+
+						var subunits = unit["subunits"],
+							resources = unit["resources"],
+							t_subunits = subunits.length + resources.length,
+							_createActivityElement = this.createActivityElement.bind(this);
+
+						// If there are subunits, we add the subunits container.
+						subunits.length > 0 && (function() {
+							html += '<h3 class="subunits-header">' + textweb("course_unit_activities") + '</h3>';
+							html += '<div class="activities-list">';
+								subunits.forEach(function(activity) {
+									!activity.ocultar
+										&& (html += _createActivityElement(activity).outerHTML);
+								});
+							html += '</div>';
+						})();
+
+						// If there are resources, we add the resources container.
+						resources.length > 0 && (function() {
+							html += '<h3 id="resources-header">' + textweb('course_supplement_content') + '</h3>';
+							html += '<div class="activities-list">';
+								resources.forEach(function(activity) {
+									!activity.ocultar
+										&& (html += _createActivityElement(activity).outerHTML);
+								});
+							html += '</div>';
+						})();
+					html += '</div>';
+				html += '</div>';
+			}).bind(this));
+
+		html += '</div>';
+
+	thirdPage.innerHTML = html;
+
+	this.carouselize(thirdPage, {}, 'third-slider_control');
+
+	return thirdPage;
+};
+
+Homepage.prototype.createElement = function(type, attributes) {
+	var element = document.createElement(type);
+
+	(attributes && typeof attributes === 'object') && Object.keys(attributes).forEach(function(attrName) {
+		element.setAttribute(attrName, attributes[attrName])
+	});
+
+	return element;
+};
+
+Homepage.prototype.addGrades = function() {
+	var _addGrade = (function(activityObj, id) {
+			if (!activityObj || typeof activityObj === undefined || activityObj === null || activityObj.nota === '') return;
+
+			var nota = this.createElement('SPAN', {'class': 'nota'}),
+				wrapper = this.mainContainer.querySelector('[data-id="' + id + '"]');
+
+			wrapper.appendChild(nota).append(activityObj.nota);
+		}).bind(this);
+
+	for (var idActividad in this.DATA_LOADED.actividades) {
+		if (isNaN(parseInt(idActividad))) return;
+		var actividad = this.DATA_LOADED.actividades[idActividad];
+		_addGrade(actividad, idActividad);
+	}
+}
+
+Homepage.prototype.carouselize = function(element, config, className) {
+	var $element = $(element),
+		defaultConfig = {cycle: false, ride: false, pause: false},
+		controlLeft = this.createElement('SPAN', {'class': 'slider_control prev fa fa-chevron-left invisible'}),
+		controlRight = this.createElement('SPAN', {'class': 'slider_control next fa fa-chevron-right'});
+
+	if (className) {
+		controlLeft.className = controlLeft.className.concat(' ', className);
+		controlRight.className = controlRight.className.concat(' ', className);
+	}
+
+	$element
+		.prepend(controlLeft)
+		.append(controlRight);
+
+	$element.carousel(defaultConfig);
+
+	// Left/right slider controls
+	controlLeft.addEventListener('click', function() {
+		$element.carousel('prev');
+	});
+	controlRight.addEventListener('click', function() {
+		$element.carousel('next');
+	});
+};
+/**
+ * [createActivityElement Crea un elemento del listado de actividades del tema con los datos de una actividad.]
+ * @param  {json} activity Datos de la actividad.
+ * @return {html}          Elemento HTML del listado de actividades.
+ */
+Homepage.prototype.createActivityElement = function(activity) {
+	var activityWrapper = this.createElement('DIV', {'class': 'subunit', 'data-id': activity.id});
+
+	// Send homework button.
+	if (this.data.includeHomeworkIcon && activity.canBeHomework) {
+		var iconWrapper = this.createElement('SPAN', {'class': 'icon icon-enviar'}),
+			image = this.createElement('IMG', {
+				'src': this.data.supportsTasks ? '/themes/responsive/images/libro/icons8-send-90.png' : '/themes/responsive/images/libro/activ-icon-deberes.png',
+				'alt': this.data.supportsTasks ? textweb('course_item_send_task') : textweb('course_item_send_homework')
+			});
+
+		iconWrapper.append(image);
+
+		// Creamos la etiqueta "script" a la que estará asociada la acción del botón de enviar deberes.
+		var scriptTag = this.createElement('SCRIPT', {'type': 'text/javascript'}),
+			scriptCode = '$("#third_page").on("tap click", \'[data-id="' + activity.id + '"] .icon-enviar\', function(){'
+			+ ((this.data.supportsTasks && activity.onlyVisibleTeachers)
+				? '_showAlert(' + textweb('task_visible_only_teacher') + ');'
+				: 'openSendActivityHomework(' + activity.id + ', ' + this.data.supportsTasks + ');')
+			+ '})';
+
+		scriptTag.innerText = scriptCode;
+
+		activityWrapper.append(iconWrapper, scriptTag);
+	}
+
+	// Activity data
+	var dataWrapper = this.createElement('DIV', {'class': 'activity-data'}); // Wrapper
+
+	var anchor = this.createElement('A', {'class': 'activity-text-data', 'href': 'javascript:void(0)', 'data-onclick': activity["onclickTitle"]}); // Link to the activity
+
+	// Activity title
+	var titleEl = this.createElement('P', {'class': 'activity-title'}),
+		titleText = activity['title'] !== '' ? activity['title'] : textweb('course_actividad_no_name');
+
+	anchor.appendChild(titleEl).append(document.createTextNode(titleText));
+
+	// If there's a description, we insert it.
+	if (typeof activity['description'] !== 'undefined' && activity['description'] != '') {
+		var description = this.createElement('P', {'class': 'activity-description'});
+		description.append(document.createTextNode(activity['description']));
+
+		anchor.append(description);
+	}
+
+	activityWrapper.appendChild(dataWrapper).append(anchor);
+
+	return activityWrapper;
+}
+
+Homepage.prototype.preloadImage = function(url, callback, onError) {
+	var preloader = this.createElement('img', {'src': url})
+		fullCallback = function() {
+			callback(url);
+			preloader = null;
+		};
+	preloader.addEventListener('load', fullCallback);
+	preloader.addEventListener('error', onError);
+}
+
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
